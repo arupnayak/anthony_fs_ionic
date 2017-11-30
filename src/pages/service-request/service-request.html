@@ -1,0 +1,465 @@
+<!--
+  Generated template for the ServiceRequestPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+    <ion-navbar hide-tabs>
+        <ion-title>Service Request: {{item.id}}</ion-title>
+        <ion-buttons end>
+            <button ion-button primary (click)="editRequest($event,item)" *ngIf="!editVar">
+    		<ion-icon name="create"></ion-icon>
+    	</button>
+            <button ion-button primary (click)="saveRequest($event,item)" *ngIf='editVar'>
+    		Save
+    	</button>
+        </ion-buttons>
+    </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+    <ion-card id="details">
+        <ion-card-header primary>
+            Details
+        </ion-card-header>
+        <ion-card-content>
+            <ion-row>
+
+                <ion-col col-11>
+                    <ion-item>
+                        <ion-label>Work Order</ion-label>
+                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.wo_no" value='{{item.wo_no}}'></ion-input>
+                    </ion-item>
+                </ion-col>
+                <ion-col col-1 bottom large>
+                    <ion-icon bottom name="barcode" *ngIf="editVar" (click)="scan()"></ion-icon>
+                </ion-col>
+
+            </ion-row>
+            <ion-row>
+                <ion-col>
+                    <ion-item>
+                        <ion-label stacked>Service Type</ion-label>
+                        <ion-input *ngIf="!editVar" type="text" [readonly]="!editVar" value='{{item.service_type}}'></ion-input>
+                        <ion-select *ngIf="editVar" [(ngModel)]="item.service_type" interface='action-sheet'>
+                            <ion-option>On Site Field Service</ion-option>
+                            <ion-option>Parts Replacement Only</ion-option>
+                            <ion-option>Phone Technical Support</ion-option>
+                            <ion-option>Others</ion-option>
+                        </ion-select>
+                    </ion-item>
+
+                </ion-col>
+            </ion-row>
+
+            <ion-row>
+                <ion-col>
+                    <ion-item>
+                        <ion-label stacked>Failure Type</ion-label>
+                        <ion-input *ngIf="!editVar" type="text" [readonly]="!editVar" value='{{item.failure_type}}'></ion-input>
+                        <ion-select *ngIf="editVar" [(ngModel)]="item.failure_type" interface='action-sheet'>
+                            <ion-option>Door</ion-option>
+                            <ion-option>Frame</ion-option>
+                            <ion-option>LED</ion-option>
+                            <ion-option>Unknown</ion-option>
+                        </ion-select>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+            
+            <ion-row>
+                <ion-col>
+                    <ion-item>
+                        <ion-label stacked>Issue</ion-label>
+                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.subject" value='{{item.subject}}'></ion-input>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col>
+                    <ion-item>
+                        <ion-label stacked>Description</ion-label>
+                        <ion-textarea type="text" [readonly]="!editVar" [(ngModel)]="item.description" value='{{item.description}}'></ion-textarea>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+            
+            <ion-card>
+                <ion-card-header>Basic Contact Information</ion-card-header>
+                <ion-card-content>
+                    <ion-row>
+                        <ion-col>
+                            <ion-item>
+                                <ion-label stacked>First Name</ion-label>
+                                <ion-input type="text" [readonly]="!editVar" 
+                                [(ngModel)]="item.first_name" value='{{item.first_name}}'></ion-input>
+                            </ion-item>
+                        </ion-col>
+                        <ion-col>
+                            <ion-item>
+                                <ion-label stacked>Last Name</ion-label>
+                                <ion-input type="text" [readonly]="!editVar" 
+                                [(ngModel)]="item.last_name" value='{{item.last_name}}'></ion-input>
+                            </ion-item>
+                        </ion-col>
+                    </ion-row>
+                    <ion-row>
+                        <ion-col>
+                            <ion-item>
+                                <ion-label stacked>Company</ion-label>
+                                <ion-input type="text" [readonly]="!editVar" 
+                                [(ngModel)]="item.company" value='{{item.company}}'></ion-input>
+                            </ion-item>
+                        </ion-col>
+                        <ion-col>
+                            <ion-item>
+                                <ion-label stacked>AAN</ion-label>
+                                <ion-input type="text" [readonly]="!editVar" 
+                                [(ngModel)]="item.anthony_account_no" value='{{item.anthony_account_no}}'></ion-input>
+                            </ion-item>
+                        </ion-col>
+                    </ion-row>
+                    <ion-row>
+                        <ion-col>
+                            <ion-item>
+                                <ion-label stacked>Phone</ion-label>
+                                <ion-input type="tel" [readonly]="!editVar" 
+                                [(ngModel)]="item.phone" value='{{item.phone}}'></ion-input>
+                            </ion-item>
+                        </ion-col>
+                        <ion-col>
+                            <ion-item>
+                                <ion-label stacked>Email</ion-label>
+                                <ion-input type="email" [readonly]="!editVar" 
+                                [(ngModel)]="item.email" value='{{item.email}}'></ion-input>
+                            </ion-item>
+                        </ion-col>
+                    </ion-row>
+                </ion-card-content>    
+            </ion-card>
+            
+
+        </ion-card-content>
+    </ion-card>
+
+    <ion-card id="location">
+        <ion-card-header>
+            Service Location Information
+        </ion-card-header>
+        <ion-card-content>
+            <ion-row>
+                <ion-col>
+                    <ion-item>
+                        <ion-label stacked>Address</ion-label>
+                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.address" value='{{item.address}}'></ion-input>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col>
+                    <ion-item>
+                        <ion-label stacked>City</ion-label>
+                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.city" value='{{item.city}}'></ion-input>
+                    </ion-item>
+                </ion-col>
+                <ion-col>
+                    <ion-item>
+                        <ion-label stacked>State</ion-label>
+                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.state" value='{{item.state}}'></ion-input>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col>
+                    <ion-item>
+                        <ion-label stacked>Country</ion-label>
+                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.country" value='{{item.country}}'></ion-input>
+                    </ion-item>
+                </ion-col>
+                <ion-col>
+                    <ion-item>
+                        <ion-label stacked>Zip Code</ion-label>
+                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.zip_code" value='{{item.zip_code}}'></ion-input>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col>
+                    <ion-item>
+                        <ion-label stacked>Site Contact</ion-label>
+                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.site_contact" value='{{item.site_contact}}'></ion-input>
+                    </ion-item>
+                </ion-col>
+                <ion-col>
+                    <ion-item>
+                        <ion-label stacked>Phone</ion-label>
+                        <ion-input type="tel" [readonly]="!editVar" [(ngModel)]="item.phone" value='{{item.phone}}'></ion-input>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+        </ion-card-content>
+    </ion-card>
+
+    <ion-card id="attach">
+        <ion-card-header>
+            Attachments
+        </ion-card-header>
+        <ion-card-content>
+            <ion-list>
+                <ion-item>
+                    Attachment list items
+                </ion-item>
+            </ion-list>
+        </ion-card-content>
+    </ion-card>
+
+    <ion-card id="findings">
+        <ion-card-header>
+            Findings
+        </ion-card-header>
+        <ion-card-content>
+            <ion-row>
+                <ion-col>
+                    <ion-item>
+                        <ion-label stacked>Finding upon arrival</ion-label>
+                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.findings" value='{{item.findings}}'></ion-input>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col>
+                    <ion-item>
+                        <ion-label stacked>Work performed</ion-label>
+                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.work_performed" value='{{item.work_performed}}'></ion-input>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+        </ion-card-content>
+    </ion-card>
+
+    <ion-card id="readings">
+        <ion-card-header>
+            Readings
+        </ion-card-header>
+        <ion-card-content>
+            <ion-row>
+                <ion-col>
+                    <ion-item>
+                        <ion-label stacked>Store temperature<br>(ambient)</ion-label>
+                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.temperature" value='{{item.temperature}}'></ion-input>
+                    </ion-item>
+                </ion-col>
+
+                <ion-col>
+                    <ion-item>
+                        <ion-label stacked>Store relative <br>humidity</ion-label>
+                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.humidity" value='{{item.humidity}}'></ion-input>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+
+            <ion-row>
+                <ion-col>
+                    <ion-item>
+                        <ion-label stacked>Case(box) temperature</ion-label>
+                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.temperature" value='{{item.temperature}}'></ion-input>
+                    </ion-item>
+                </ion-col>
+
+                <ion-col>
+                    <ion-item>
+                        <ion-label stacked>Frame readings</ion-label>
+                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.frame_readings" value='{{item.humidity}}'></ion-input>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+
+            <ion-row>
+                <ion-col>
+                    <ion-item>
+                        <ion-label stacked>Anthony model #</ion-label>
+                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="anthony_model_no" value='{{item.temperature}}'></ion-input>
+                    </ion-item>
+                </ion-col>
+
+                <ion-col>
+                    <ion-item>
+                        <ion-label stacked>Date manufactured</ion-label>
+                        <ion-datetime displayFormat="MM/DD/YYYY" [(ngModel)]="item.date_manufactured" ></ion-datetime>
+                    </ion-item>
+                </ion-col>
+
+                <ion-col>
+                    <ion-item>
+                        <ion-label stacked>Case manufacture</ion-label>
+                        <ion-datetime displayFormat="MM/DD/YYYY" [(ngModel)]="item.case_manufacture"></ion-datetime>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+            <ion-card>
+                <ion-card-content>
+                    <ion-row>
+                        <ion-col>
+                            <ion-label stacked>Does store have</ion-label>
+                            <ion-item>
+                                <ion-label><p>Cooler</p></ion-label>
+                                <ion-checkbox [(ngModel)]="Cooler"></ion-checkbox>
+                            </ion-item>
+
+                            <ion-item>
+                                <ion-label><p>Freezer</p></ion-label>
+                                <ion-checkbox [(ngModel)]="Freezer"></ion-checkbox>
+                            </ion-item>
+
+                            <ion-item>
+                                <ion-label><p>None</p></ion-label>
+                                <ion-checkbox [(ngModel)]="None"></ion-checkbox>
+                            </ion-item>
+
+                            <ion-item>
+                                <ion-label><p>Refrigerated AC</p></ion-label>
+                                <ion-checkbox [(ngModel)]="refrigerated_ac"></ion-checkbox>
+                            </ion-item>
+
+                            <ion-item>
+                                <ion-label><p>Swamps Coolers</p></ion-label>
+                                <ion-checkbox [(ngModel)]="swamps_coolers"></ion-checkbox>
+                            </ion-item>
+
+                        </ion-col>
+                    </ion-row>  
+                </ion-card-content>
+            </ion-card>
+            <ion-row>
+                <ion-item>
+                  <ion-label><p style="font-size:small">Is the equipment properly grounded?</p></ion-label>
+                  <ion-toggle [(ngModel)]="grounded"></ion-toggle>
+                </ion-item>
+                <ion-item>
+                  <ion-label><p style="font-size:small">Are lights and heaters on <br>separate circuits?</p></ion-label>
+                  <ion-toggle [(ngModel)]="separate_circuits"></ion-toggle>
+                </ion-item>
+                <ion-item>
+                  <ion-label><p style="font-size:small">Are fan blowing directly <br>on back of glass doors?</p></ion-label>
+                  <ion-toggle [(ngModel)]="doors"></ion-toggle>
+                </ion-item>
+                <ion-item>
+                  <ion-label><p style="font-size:small">Door/Frame gaskets sealing?</p></ion-label>
+                  <ion-toggle [(ngModel)]="sealing"></ion-toggle>
+                </ion-item>
+                <ion-item>
+                  <ion-label><p style="font-size:small">Problem reported different<br>than problem found?</p></ion-label>
+                  <ion-toggle [(ngModel)]="different"></ion-toggle>
+                </ion-item>
+                <ion-item>
+                  <ion-label><p style="font-size:small">Glass Condensation?</p></ion-label>
+                  <ion-toggle [(ngModel)]="glass_Condensation"></ion-toggle>
+                </ion-item>
+                <ion-item>
+                  <ion-label><p style="font-size:small">Frame condensation?</p></ion-label>
+                  <ion-toggle [(ngModel)]="frame_condensation"></ion-toggle>
+                </ion-item>
+                <ion-item>
+                  <ion-label><p style="font-size:small">Door rail condensation?</p></ion-label>
+                  <ion-toggle [(ngModel)]="rail_condensation"></ion-toggle>
+                </ion-item>
+                <ion-item>
+                  <ion-label><p style="font-size:small">Box (case) condensation?</p></ion-label>
+                  <ion-toggle [(ngModel)]="box_condensation"></ion-toggle>
+                </ion-item>
+                <ion-item>
+                  <ion-label><p style="font-size:small">Install Problems?</p></ion-label>
+                  <ion-toggle [(ngModel)]="install_problems"></ion-toggle>
+                </ion-item>
+                
+            </ion-row>
+            
+            
+        </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+        <ion-card-content>
+            <ion-row>
+                <ion-col>
+                    <ion-item>
+                    <ion-label stacked>Manager Name</ion-label>
+                    <ion-input [(ngModel)]="manager_name"></ion-input>
+                    </ion-item>
+                </ion-col>
+                <ion-col>
+                    <ion-item>
+                    <ion-label stacked>Invoice #</ion-label>
+                    <ion-input [(ngModel)]="invoice_no"></ion-input>
+                    </ion-item>
+                </ion-col>
+                </ion-row>
+                <ion-row>
+                <ion-col>
+                    <ion-item>
+                    <ion-label stacked>Manager Signature</ion-label>
+                    <ion-input [(ngModel)]="manager_name"></ion-input>
+                    </ion-item>
+                </ion-col>
+                <ion-col>
+                    <ion-item>
+                    <ion-label stacked>Amount</ion-label>
+                    <ion-input [(ngModel)]="amount"></ion-input>
+                    </ion-item>
+                </ion-col>
+                <ion-col>
+                    <ion-item>
+                    <ion-label stacked>Date</ion-label>
+                    <ion-datetime displayFormat="MM/DD/YYYY" [(ngModel)]="invoice_date"></ion-datetime>
+                    </ion-item>
+                </ion-col>
+                </ion-row>
+        </ion-card-content>
+    </ion-card>
+
+</ion-content>
+
+<ion-footer>
+    <ion-toolbar text-center>
+        <ion-row>
+            <ion-col>
+                <a href="#details">
+                    <ion-icon name="construct"></ion-icon>
+                    <p>Details</p>
+                </a>
+            </ion-col>
+
+            <ion-col>
+                <a href="#location">
+                    <ion-icon name="locate"></ion-icon>
+                    <p>Location</p>
+                </a>
+            </ion-col>
+
+            <ion-col>
+                <a href="#attach">
+                    <ion-icon name="attach"></ion-icon>
+                    <p>Attachments</p>
+                </a>
+            </ion-col>
+            <ion-col>
+                <a href="#findings">
+                    <ion-icon name="glasses"></ion-icon>
+                    <p>Findings</p>
+                </a>
+            </ion-col>
+
+            <ion-col>
+                <a href="#readings">
+                    <ion-icon name="thermometer"></ion-icon>
+                    <p>Readings</p>
+                </a>
+            </ion-col>
+
+        </ion-row>
+    </ion-toolbar>
+</ion-footer>

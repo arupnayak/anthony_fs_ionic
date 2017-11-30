@@ -1,0 +1,8 @@
+{
+  "name": "AnthonyFS",
+  "app_id": "2f8e862d",
+  "type": "ionic-angular",
+  "integrations": {
+    "cordova": {}
+  }
+}
