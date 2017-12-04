@@ -35,9 +35,6 @@ export class AnthonyApi {
 	      btoa('a20e6aca-ee83-44bc-8033-b41f3078c2b6:c199f9c8-0548-4be79655-7ef7d7bf9d20')); 
 	  }
 
-    
-    
-
     postServiceRequest(item){
         var headers = new Headers();
 	    //this.createAuthorizationHeader(headers);
@@ -63,6 +60,4 @@ export class AnthonyApi {
                 	.subscribe(res => resolve(res.json()));
         });
     }
-
-    
 }

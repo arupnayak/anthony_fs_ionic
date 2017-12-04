@@ -27,6 +27,10 @@
         },
         "phonegap-plugin-barcodescanner": {
             "PACKAGE_NAME": "io.ionic.starter"
+        },
+        "cordova-plugin-googlemaps": {
+            "API_KEY_FOR_ANDROID": "AIzaSyDKAOG5ZJa3_Lv9Uj64G7cD3aeh-cRe9Rs",
+            "PACKAGE_NAME": "com.anthonyintl"
         }
     },
     "dependent_plugins": {

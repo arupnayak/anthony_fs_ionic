@@ -80,6 +80,10 @@
     <engine name="android" spec="^6.2.3" />
     <plugin name="cordova-plugin-console" spec="^1.0.5" />
     <plugin name="cordova-plugin-device" spec="^1.1.4" />
+    <plugin name="cordova-plugin-googlemaps" spec="^2.1.1">
+        <variable name="API_KEY_FOR_ANDROID" value="AIzaSyDKAOG5ZJa3_Lv9Uj64G7cD3aeh-cRe9Rs" />
+        <variable name="API_KEY_FOR_IOS" value="AIzaSyDKAOG5ZJa3_Lv9Uj64G7cD3aeh-cRe9Rs" />
+    </plugin>
     <plugin name="cordova-plugin-splashscreen" spec="^4.0.3" />
     <plugin name="cordova-plugin-statusbar" spec="^2.2.2" />
     <plugin name="cordova-plugin-whitelist" spec="^1.3.1" />
