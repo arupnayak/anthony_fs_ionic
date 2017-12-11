@@ -25198,3 +25198,12 @@ ion-navbar.toolbar {
     padding-top: calc(16px + 20px);
   }
 }
+
+page-closed-requests .scroll {
+  height: 100%;
+}
+
+page-closed-requests #map {
+  width: 100%;
+  height: 100%;
+}

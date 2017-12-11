@@ -31,6 +31,12 @@
         "cordova-plugin-googlemaps": {
             "API_KEY_FOR_ANDROID": "AIzaSyDKAOG5ZJa3_Lv9Uj64G7cD3aeh-cRe9Rs",
             "PACKAGE_NAME": "com.anthonyintl"
+        },
+        "cordova-plugin-geolocation": {
+            "PACKAGE_NAME": "com.anthonyintl"
+        },
+        "cordova-sqlite-storage": {
+            "PACKAGE_NAME": "com.anthonyintl"
         }
     },
     "dependent_plugins": {

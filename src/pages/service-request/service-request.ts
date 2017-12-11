@@ -1,14 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { NavController, NavParams, LoadingController, ToastController } from 'ionic-angular';
 //import * as _ from 'lodash';
 import { AnthonyApi } from '../../shared/shared';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
+import { Geolocation } from '@ionic-native/geolocation';
+
 /**
  * Generated class for the ServiceRequestPage page.
  *
  * See http://ionicframework.com/docs/components/#navigation for more info
  * on Ionic pages and navigation.
  */
+declare var google;
 
 @Component({
   selector: 'page-service-request',
@@ -19,14 +22,17 @@ export class ServiceRequestPage {
 	item : any;
 	msg:any;
 	//itemData : any;
-	editVar:boolean;
+  editVar:boolean;
+  @ViewChild('map') mapElement: ElementRef;
+  map: any;
 
   constructor(public navCtrl: NavController,
   				 public navParams: NavParams, 
   				 private anthonyApi: AnthonyApi,
   				 private barcodeScanner: BarcodeScanner,
   				 private toastController: ToastController,
-  				 private loadingController: LoadingController) {
+           private loadingController: LoadingController,
+          public geolocation: Geolocation) {
   	this.item = this.navParams.data;
     console.log(this.item);
     this.editVar = true;
@@ -80,6 +86,25 @@ export class ServiceRequestPage {
         this.navCtrl.popToRoot();
         console.log(this.msg);
       });
+    });
+  }
+
+  getLocation(){
+    this.geolocation.getCurrentPosition().then((position) => {
+      console.log(position);
+
+      let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+      let mapOptions = {
+        center: latLng,
+        zoom: 15,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+      }
+
+      this.map = new google.maps.Map(this.mapElement.nativeElement, mapOptions);
+
+    }, (err) => {
+      console.log(err);
     });
   }
 

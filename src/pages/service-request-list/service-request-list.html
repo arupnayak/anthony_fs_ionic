@@ -11,6 +11,7 @@
       <ion-icon name="menu"></ion-icon>
     </button>
     <ion-buttons end> 
+      <ion-spinner icon="spiral" *ngIf="loading"></ion-spinner>
       <button ion-button primary (click)="createNewRequest()">
         <ion-icon name="add-circle"></ion-icon>
       </button>

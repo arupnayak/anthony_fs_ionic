@@ -28,6 +28,9 @@ import {
   // MarkerOptions,
   // Marker
  } from '@ionic-native/google-maps';
+import { Geolocation } from '@ionic-native/geolocation';
+import { IonicStorageModule } from '@ionic/storage';
+import localForage from "localforage";
 
 
 @NgModule({
@@ -47,6 +50,10 @@ import {
   imports: [
     BrowserModule,
     IonicModule.forRoot(AnthonyFS),
+    IonicStorageModule.forRoot({
+      name: 'FieldService',
+      driverOrder: ['indexeddb', 'sqlite', 'websql']
+    }),
     HttpModule
   ],
   bootstrap: [IonicApp],
@@ -67,6 +74,7 @@ import {
     StatusBar,
     SplashScreen,
     GoogleMaps,
+    Geolocation,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })

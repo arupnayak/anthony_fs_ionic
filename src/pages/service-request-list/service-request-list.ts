@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { NavController, NavParams, LoadingController } from 'ionic-angular';
 import { AnthonyApi } from '../../shared/shared';
 import {ServiceRequestPage} from '../pages';
+import { Storage } from '@ionic/storage';
+import localForage from "localforage";
 /**
  * Generated class for the ServiceRequestListPage page.
  *
@@ -16,11 +18,14 @@ import {ServiceRequestPage} from '../pages';
 export class ServiceRequestListPage {
 
   items : any;
+  loading : any;
   
   constructor(public navCtrl: NavController,
   				 public navParams: NavParams, 
   				 private anthonyApi: AnthonyApi,
-  				 private loadingController: LoadingController) {
+           private loadingController: LoadingController,
+          private storage: Storage
+  ) {
   }
 
   ionViewDidLoad() {
@@ -31,10 +36,27 @@ export class ServiceRequestListPage {
     });
 
     loader.present().then(() => {
-      this.anthonyApi.getServiceRequests().then(data => {
-        this.items = data;
-        loader.dismiss();
-      });
+      this.storage.get("service.requests").then(
+        (data)=>{
+          this.items = data;
+          loader.dismiss();
+        }
+      )
+    });
+
+    this.loading = true;
+    this.anthonyApi.getServiceRequests().then(data => {
+      this.items = data;
+      this.storage.set("service.requests",data).then(
+        ()=>{
+          this.storage.get("service.requests").then(
+            (data) => {
+              this.items = data;
+            }
+          )
+        }
+      );
+      this.loading = false;
     });
 
     console.log(this.items);

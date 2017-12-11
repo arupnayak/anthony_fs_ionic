@@ -1,17 +1,17 @@
 webpackJsonp([0],{
 
-/***/ 124:
+/***/ 125:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__anthony_api_service__ = __webpack_require__(310);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__anthony_api_service__ = __webpack_require__(311);
 /* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_0__anthony_api_service__["a"]; });
 
 //# sourceMappingURL=shared.js.map
 
 /***/ }),
 
-/***/ 131:
+/***/ 132:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -19,7 +19,7 @@ webpackJsonp([0],{
 /* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_0__home_home__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__service_request_list_service_request_list__ = __webpack_require__(231);
 /* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_1__service_request_list_service_request_list__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__service_request_service_request__ = __webpack_require__(577);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__service_request_service_request__ = __webpack_require__(578);
 /* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_2__service_request_service_request__["a"]; });
 
 
@@ -28,7 +28,7 @@ webpackJsonp([0],{
 
 /***/ }),
 
-/***/ 142:
+/***/ 143:
 /***/ (function(module, exports) {
 
 function webpackEmptyAsyncContext(req) {
@@ -37,18 +37,18 @@ function webpackEmptyAsyncContext(req) {
 webpackEmptyAsyncContext.keys = function() { return []; };
 webpackEmptyAsyncContext.resolve = webpackEmptyAsyncContext;
 module.exports = webpackEmptyAsyncContext;
-webpackEmptyAsyncContext.id = 142;
+webpackEmptyAsyncContext.id = 143;
 
 /***/ }),
 
-/***/ 143:
+/***/ 144:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ClosedRequestsPage; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(21);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ionic_native_google_maps__ = __webpack_require__(226);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ionic_native_geolocation__ = __webpack_require__(122);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -60,17 +60,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 
 
+// import {
+//   GoogleMaps,
+//   GoogleMap,
+//   GoogleMapsEvent,
+//   GoogleMapOptions,
+//   // CameraPosition,
+//   // MarkerOptions,
+//   // Marker
+// } from '@ionic-native/google-maps';
 
-/**
- * Generated class for the ClosedRequestsPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
 var ClosedRequestsPage = (function () {
-    function ClosedRequestsPage(navCtrl, navParams) {
+    function ClosedRequestsPage(navCtrl, navParams, geolocation) {
         this.navCtrl = navCtrl;
         this.navParams = navParams;
+        this.geolocation = geolocation;
     }
     ClosedRequestsPage.prototype.ionViewDidLoad = function () {
         console.log('ionViewDidLoad ClosedRequestsPage');
@@ -78,55 +82,54 @@ var ClosedRequestsPage = (function () {
     };
     ClosedRequestsPage.prototype.loadMap = function () {
         var _this = this;
-        var mapOptions = {
-            camera: {
-                target: {
-                    lat: 43.0741904,
-                    lng: -89.3809802
-                },
-                zoom: 18,
-                tilt: 30
-            }
-        };
-        this.map = __WEBPACK_IMPORTED_MODULE_2__ionic_native_google_maps__["a" /* GoogleMaps */].create('canvas', mapOptions);
-        console.log("canvas created");
-        // Wait the MAP_READY before using any methods.
-        this.map.one(__WEBPACK_IMPORTED_MODULE_2__ionic_native_google_maps__["b" /* GoogleMapsEvent */].MAP_READY)
-            .then(function () {
-            console.log('Map is ready!');
-            // Now you can use all methods safely.
-            _this.map.addMarker({
-                title: 'Ionic',
-                icon: 'blue',
-                animation: 'DROP',
-                position: {
-                    lat: 43.0741904,
-                    lng: -89.3809802
-                }
-            })
-                .then(function (marker) {
-                marker.on(__WEBPACK_IMPORTED_MODULE_2__ionic_native_google_maps__["b" /* GoogleMapsEvent */].MARKER_CLICK)
-                    .subscribe(function () {
-                    alert('clicked');
-                });
-            });
+        this.geolocation.getCurrentPosition().then(function (position) {
+            var latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+            var mapOptions = {
+                center: latLng,
+                zoom: 15,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+            _this.map = new google.maps.Map(_this.mapElement.nativeElement, mapOptions);
+        }, function (err) {
+            console.log(err);
+        });
+    };
+    ClosedRequestsPage.prototype.addMarker = function () {
+        var marker = new google.maps.Marker({
+            map: this.map,
+            animation: google.maps.Animation.DROP,
+            position: this.map.getCenter()
+        });
+        var content = "<h4>Information!</h4>";
+        this.addInfoWindow(marker, content);
+    };
+    ClosedRequestsPage.prototype.addInfoWindow = function (marker, content) {
+        var _this = this;
+        var infoWindow = new google.maps.InfoWindow({
+            content: content
+        });
+        google.maps.event.addListener(marker, 'click', function () {
+            infoWindow.open(_this.map, marker);
         });
     };
     return ClosedRequestsPage;
 }());
+__decorate([
+    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_13" /* ViewChild */])('map'),
+    __metadata("design:type", __WEBPACK_IMPORTED_MODULE_0__angular_core__["u" /* ElementRef */])
+], ClosedRequestsPage.prototype, "mapElement", void 0);
 ClosedRequestsPage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'page-closed-requests',template:/*ion-inline-start:"C:\work\nodejs\AnthonyFS\src\pages\closed-requests\closed-requests.html"*/'<!--\n  Generated template for the ClosedRequestsPage page.\n\n  See http://ionicframework.com/docs/components/#navigation for more info on\n  Ionic pages and navigation.\n-->\n<ion-header>\n\n  <ion-navbar primary>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-buttons end> \n      <button ion-button primary (click)="createNewRequest()">\n        <ion-icon name="add-circle"></ion-icon>\n      </button>\n    </ion-buttons>\n    <ion-title>Closed Requests</ion-title>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content padding>\n\n</ion-content>\n'/*ion-inline-end:"C:\work\nodejs\AnthonyFS\src\pages\closed-requests\closed-requests.html"*/,
+        selector: 'page-closed-requests',template:/*ion-inline-start:"C:\work\nodejs\AnthonyFS\src\pages\closed-requests\closed-requests.html"*/'<!--\n  Generated template for the ClosedRequestsPage page.\n\n  See http://ionicframework.com/docs/components/#navigation for more info on\n  Ionic pages and navigation.\n-->\n<ion-header>\n\n  <ion-navbar primary>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-buttons end>\n      <button ion-button (click)="addMarker()">\n        <ion-icon name="add"></ion-icon>Add Marker</button>\n    </ion-buttons>\n    <ion-title>Closed Requests</ion-title>\n  </ion-navbar>\n\n</ion-header>\n<ion-content>\n  <div #map id="map"></div>\n</ion-content>'/*ion-inline-end:"C:\work\nodejs\AnthonyFS\src\pages\closed-requests\closed-requests.html"*/,
     }),
-    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavParams */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavParams */]) === "function" && _b || Object])
+    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavParams */], __WEBPACK_IMPORTED_MODULE_2__ionic_native_geolocation__["a" /* Geolocation */]])
 ], ClosedRequestsPage);
 
-var _a, _b;
 //# sourceMappingURL=closed-requests.js.map
 
 /***/ }),
 
-/***/ 186:
+/***/ 187:
 /***/ (function(module, exports) {
 
 function webpackEmptyAsyncContext(req) {
@@ -135,7 +138,7 @@ function webpackEmptyAsyncContext(req) {
 webpackEmptyAsyncContext.keys = function() { return []; };
 webpackEmptyAsyncContext.resolve = webpackEmptyAsyncContext;
 module.exports = webpackEmptyAsyncContext;
-webpackEmptyAsyncContext.id = 186;
+webpackEmptyAsyncContext.id = 187;
 
 /***/ }),
 
@@ -189,7 +192,7 @@ InProgressRequestsPage = __decorate([
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return RequestListTabsPage; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__closed_requests_closed_requests__ = __webpack_require__(143);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__closed_requests_closed_requests__ = __webpack_require__(144);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__in_progress_requests_in_progress_requests__ = __webpack_require__(229);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__service_request_list_service_request_list__ = __webpack_require__(231);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_core__ = __webpack_require__(1);
@@ -245,8 +248,9 @@ RequestListTabsPage = __decorate([
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ServiceRequestListPage; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(21);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__shared_shared__ = __webpack_require__(124);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__pages__ = __webpack_require__(131);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__shared_shared__ = __webpack_require__(125);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__pages__ = __webpack_require__(132);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ionic_storage__ = __webpack_require__(256);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -260,6 +264,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
 /**
  * Generated class for the ServiceRequestListPage page.
  *
@@ -267,11 +272,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  * on Ionic pages and navigation.
  */
 var ServiceRequestListPage = (function () {
-    function ServiceRequestListPage(navCtrl, navParams, anthonyApi, loadingController) {
+    function ServiceRequestListPage(navCtrl, navParams, anthonyApi, loadingController, storage) {
         this.navCtrl = navCtrl;
         this.navParams = navParams;
         this.anthonyApi = anthonyApi;
         this.loadingController = loadingController;
+        this.storage = storage;
     }
     ServiceRequestListPage.prototype.ionViewDidLoad = function () {
         var _this = this;
@@ -281,10 +287,20 @@ var ServiceRequestListPage = (function () {
             //spinner: 'dots'
         });
         loader.present().then(function () {
-            _this.anthonyApi.getServiceRequests().then(function (data) {
+            _this.storage.get("service.requests").then(function (data) {
                 _this.items = data;
                 loader.dismiss();
             });
+        });
+        this.loading = true;
+        this.anthonyApi.getServiceRequests().then(function (data) {
+            _this.items = data;
+            _this.storage.set("service.requests", data).then(function () {
+                _this.storage.get("service.requests").then(function (data) {
+                    _this.items = data;
+                });
+            });
+            _this.loading = false;
         });
         console.log(this.items);
     };
@@ -299,14 +315,12 @@ var ServiceRequestListPage = (function () {
 }());
 ServiceRequestListPage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'page-service-request-list',template:/*ion-inline-start:"C:\work\nodejs\AnthonyFS\src\pages\service-request-list\service-request-list.html"*/'<!--\n  Generated template for the ServiceRequestListPage page.\n\n  See http://ionicframework.com/docs/components/#navigation for more info on\n  Ionic pages and navigation.\n-->\n<ion-header>\n\n  <ion-navbar primary>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-buttons end> \n      <button ion-button primary (click)="createNewRequest()">\n        <ion-icon name="add-circle"></ion-icon>\n      </button>\n    </ion-buttons>\n    <ion-title>Service Requests</ion-title>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content padding>\n    <ion-list>\n          <ion-item-sliding *ngFor="let item of items" >\n          <ion-item (click)="itemTapped($event,item)">\n              <h2 >{{item.wo_no}}</h2>\n              <p>{{item.subject}}</p>\n          </ion-item>\n            <ion-item-options>\n              <button ion-button color="light" icon-start>\n                <ion-icon name="more"></ion-icon>\n                More\n              </button>\n              <button ion-button color="primary" icon-start>\n                <ion-icon name="done-all"></ion-icon>\n                Done\n              </button>\n              <button ion-button color="secondary" icon-start>\n                <ion-icon name="send"></ion-icon>\n                Mail\n              </button>\n          </ion-item-options>\n        </ion-item-sliding>\n    </ion-list>\n</ion-content>\n\n<!--\n<ion-footer >\n  <ion-toolbar>\n    <ion-row>\n      <ion-col >\n        <button ion-button color="light" icon-start>\n          <ion-icon name="refresh-circle"></ion-icon>\n        </button>\n      </ion-col>\n\n      <ion-col >\n      <button ion-button color="light" icon-start>\n          <ion-icon name="funnel"></ion-icon>\n        </button>\n      </ion-col>\n\n      <ion-col >\n      <button ion-button color="light" icon-start>\n          <ion-icon name="download"></ion-icon>\n        </button>\n      </ion-col>\n      \n    </ion-row>\n  </ion-toolbar>\n</ion-footer>\n-->'/*ion-inline-end:"C:\work\nodejs\AnthonyFS\src\pages\service-request-list\service-request-list.html"*/,
+        selector: 'page-service-request-list',template:/*ion-inline-start:"C:\work\nodejs\AnthonyFS\src\pages\service-request-list\service-request-list.html"*/'<!--\n  Generated template for the ServiceRequestListPage page.\n\n  See http://ionicframework.com/docs/components/#navigation for more info on\n  Ionic pages and navigation.\n-->\n<ion-header>\n\n  <ion-navbar primary>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-buttons end> \n      <ion-spinner icon="spiral" *ngIf="loading"></ion-spinner>\n      <button ion-button primary (click)="createNewRequest()">\n        <ion-icon name="add-circle"></ion-icon>\n      </button>\n    </ion-buttons>\n    <ion-title>Service Requests</ion-title>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content padding>\n    <ion-list>\n          <ion-item-sliding *ngFor="let item of items" >\n          <ion-item (click)="itemTapped($event,item)">\n              <h2 >{{item.wo_no}}</h2>\n              <p>{{item.subject}}</p>\n          </ion-item>\n            <ion-item-options>\n              <button ion-button color="light" icon-start>\n                <ion-icon name="more"></ion-icon>\n                More\n              </button>\n              <button ion-button color="primary" icon-start>\n                <ion-icon name="done-all"></ion-icon>\n                Done\n              </button>\n              <button ion-button color="secondary" icon-start>\n                <ion-icon name="send"></ion-icon>\n                Mail\n              </button>\n          </ion-item-options>\n        </ion-item-sliding>\n    </ion-list>\n</ion-content>\n\n<!--\n<ion-footer >\n  <ion-toolbar>\n    <ion-row>\n      <ion-col >\n        <button ion-button color="light" icon-start>\n          <ion-icon name="refresh-circle"></ion-icon>\n        </button>\n      </ion-col>\n\n      <ion-col >\n      <button ion-button color="light" icon-start>\n          <ion-icon name="funnel"></ion-icon>\n        </button>\n      </ion-col>\n\n      <ion-col >\n      <button ion-button color="light" icon-start>\n          <ion-icon name="download"></ion-icon>\n        </button>\n      </ion-col>\n      \n    </ion-row>\n  </ion-toolbar>\n</ion-footer>\n-->'/*ion-inline-end:"C:\work\nodejs\AnthonyFS\src\pages\service-request-list\service-request-list.html"*/,
     }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavParams */],
-        __WEBPACK_IMPORTED_MODULE_2__shared_shared__["a" /* AnthonyApi */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["d" /* LoadingController */]])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavParams */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavParams */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_2__shared_shared__["a" /* AnthonyApi */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__shared_shared__["a" /* AnthonyApi */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["d" /* LoadingController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["d" /* LoadingController */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_4__ionic_storage__["b" /* Storage */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__ionic_storage__["b" /* Storage */]) === "function" && _e || Object])
 ], ServiceRequestListPage);
 
+var _a, _b, _c, _d, _e;
 //# sourceMappingURL=service-request-list.js.map
 
 /***/ }),
@@ -318,7 +332,7 @@ ServiceRequestListPage = __decorate([
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return HomePage; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(21);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__pages__ = __webpack_require__(131);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__pages__ = __webpack_require__(132);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -364,7 +378,7 @@ HomePage = __decorate([
 
 /***/ }),
 
-/***/ 256:
+/***/ 257:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -409,7 +423,7 @@ NotificationsPage = __decorate([
 
 /***/ }),
 
-/***/ 257:
+/***/ 258:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -454,13 +468,13 @@ FlaggedPage = __decorate([
 
 /***/ }),
 
-/***/ 258:
+/***/ 259:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return HomeTabsPage; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__flagged_flagged__ = __webpack_require__(257);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__notifications_notifications__ = __webpack_require__(256);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__flagged_flagged__ = __webpack_require__(258);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__notifications_notifications__ = __webpack_require__(257);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__home_home__ = __webpack_require__(254);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_core__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_ionic_angular__ = __webpack_require__(21);
@@ -508,13 +522,13 @@ HomeTabsPage = __decorate([
 
 /***/ }),
 
-/***/ 261:
+/***/ 262:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser_dynamic__ = __webpack_require__(262);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__app_module__ = __webpack_require__(266);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser_dynamic__ = __webpack_require__(263);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__app_module__ = __webpack_require__(267);
 
 
 Object(__WEBPACK_IMPORTED_MODULE_0__angular_platform_browser_dynamic__["a" /* platformBrowserDynamic */])().bootstrapModule(__WEBPACK_IMPORTED_MODULE_1__app_module__["a" /* AppModule */]);
@@ -522,27 +536,29 @@ Object(__WEBPACK_IMPORTED_MODULE_0__angular_platform_browser_dynamic__["a" /* pl
 
 /***/ }),
 
-/***/ 266:
+/***/ 267:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AppModule; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__pages_closed_requests_closed_requests__ = __webpack_require__(143);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__pages_closed_requests_closed_requests__ = __webpack_require__(144);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__pages_in_progress_requests_in_progress_requests__ = __webpack_require__(229);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__pages_open_requests_open_requests__ = __webpack_require__(309);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__pages_open_requests_open_requests__ = __webpack_require__(310);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__pages_request_list_tabs_request_list_tabs__ = __webpack_require__(230);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__pages_notifications_notifications__ = __webpack_require__(256);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__pages_flagged_flagged__ = __webpack_require__(257);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__pages_home_tabs_home_tabs__ = __webpack_require__(258);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__pages_notifications_notifications__ = __webpack_require__(257);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__pages_flagged_flagged__ = __webpack_require__(258);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__pages_home_tabs_home_tabs__ = __webpack_require__(259);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__angular_platform_browser__ = __webpack_require__(39);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__angular_core__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_ionic_angular__ = __webpack_require__(21);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__angular_http__ = __webpack_require__(125);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__app_component__ = __webpack_require__(578);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__pages_pages__ = __webpack_require__(131);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__ionic_native_status_bar__ = __webpack_require__(259);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__ionic_native_splash_screen__ = __webpack_require__(260);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__ionic_native_google_maps__ = __webpack_require__(226);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__angular_http__ = __webpack_require__(126);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__app_component__ = __webpack_require__(582);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__pages_pages__ = __webpack_require__(132);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__ionic_native_status_bar__ = __webpack_require__(260);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__ionic_native_splash_screen__ = __webpack_require__(261);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__ionic_native_google_maps__ = __webpack_require__(583);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__ionic_native_geolocation__ = __webpack_require__(122);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__ionic_storage__ = __webpack_require__(256);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -565,6 +581,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 
 
 //import { RestapiServiceProvider } from '../providers/restapi-service/restapi-service';
+
+
 
 var AppModule = (function () {
     function AppModule() {
@@ -589,6 +607,10 @@ AppModule = __decorate([
         imports: [
             __WEBPACK_IMPORTED_MODULE_7__angular_platform_browser__["a" /* BrowserModule */],
             __WEBPACK_IMPORTED_MODULE_9_ionic_angular__["c" /* IonicModule */].forRoot(__WEBPACK_IMPORTED_MODULE_11__app_component__["a" /* AnthonyFS */]),
+            __WEBPACK_IMPORTED_MODULE_17__ionic_storage__["a" /* IonicStorageModule */].forRoot({
+                name: 'FieldService',
+                driverOrder: ['indexeddb', 'sqlite', 'websql']
+            }),
             __WEBPACK_IMPORTED_MODULE_10__angular_http__["c" /* HttpModule */]
         ],
         bootstrap: [__WEBPACK_IMPORTED_MODULE_9_ionic_angular__["a" /* IonicApp */]],
@@ -609,6 +631,7 @@ AppModule = __decorate([
             __WEBPACK_IMPORTED_MODULE_13__ionic_native_status_bar__["a" /* StatusBar */],
             __WEBPACK_IMPORTED_MODULE_14__ionic_native_splash_screen__["a" /* SplashScreen */],
             __WEBPACK_IMPORTED_MODULE_15__ionic_native_google_maps__["a" /* GoogleMaps */],
+            __WEBPACK_IMPORTED_MODULE_16__ionic_native_geolocation__["a" /* Geolocation */],
             { provide: __WEBPACK_IMPORTED_MODULE_8__angular_core__["v" /* ErrorHandler */], useClass: __WEBPACK_IMPORTED_MODULE_9_ionic_angular__["b" /* IonicErrorHandler */] }
         ]
     })
@@ -618,7 +641,7 @@ AppModule = __decorate([
 
 /***/ }),
 
-/***/ 309:
+/***/ 310:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -663,14 +686,14 @@ OpenRequestsPage = __decorate([
 
 /***/ }),
 
-/***/ 310:
+/***/ 311:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AnthonyApi; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_http__ = __webpack_require__(125);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs__ = __webpack_require__(311);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_http__ = __webpack_require__(126);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs__ = __webpack_require__(312);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_rxjs__);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -745,15 +768,16 @@ AnthonyApi = __decorate([
 
 /***/ }),
 
-/***/ 577:
+/***/ 578:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ServiceRequestPage; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(21);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__shared_shared__ = __webpack_require__(124);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__shared_shared__ = __webpack_require__(125);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ionic_native_barcode_scanner__ = __webpack_require__(255);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ionic_native_geolocation__ = __webpack_require__(122);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -768,20 +792,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 //import * as _ from 'lodash';
 
 
-/**
- * Generated class for the ServiceRequestPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
+
 var ServiceRequestPage = (function () {
-    function ServiceRequestPage(navCtrl, navParams, anthonyApi, barcodeScanner, toastController, loadingController) {
+    function ServiceRequestPage(navCtrl, navParams, anthonyApi, barcodeScanner, toastController, loadingController, geolocation) {
         this.navCtrl = navCtrl;
         this.navParams = navParams;
         this.anthonyApi = anthonyApi;
         this.barcodeScanner = barcodeScanner;
         this.toastController = toastController;
         this.loadingController = loadingController;
+        this.geolocation = geolocation;
         this.item = this.navParams.data;
         console.log(this.item);
         this.editVar = true;
@@ -832,6 +852,21 @@ var ServiceRequestPage = (function () {
             });
         });
     };
+    ServiceRequestPage.prototype.getLocation = function () {
+        var _this = this;
+        this.geolocation.getCurrentPosition().then(function (position) {
+            console.log(position);
+            var latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+            var mapOptions = {
+                center: latLng,
+                zoom: 15,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+            _this.map = new google.maps.Map(_this.mapElement.nativeElement, mapOptions);
+        }, function (err) {
+            console.log(err);
+        });
+    };
     ServiceRequestPage.prototype.postRequest = function (item) {
         var _this = this;
         console.log('Post Request');
@@ -857,35 +892,40 @@ var ServiceRequestPage = (function () {
     };
     return ServiceRequestPage;
 }());
+__decorate([
+    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_13" /* ViewChild */])('map'),
+    __metadata("design:type", __WEBPACK_IMPORTED_MODULE_0__angular_core__["u" /* ElementRef */])
+], ServiceRequestPage.prototype, "mapElement", void 0);
 ServiceRequestPage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'page-service-request',template:/*ion-inline-start:"C:\work\nodejs\AnthonyFS\src\pages\service-request\service-request.html"*/'<!--\n  Generated template for the ServiceRequestPage page.\n\n  See http://ionicframework.com/docs/components/#navigation for more info on\n  Ionic pages and navigation.\n-->\n<ion-header>\n\n    <ion-navbar hide-tabs>\n        <ion-title>Service Request: {{item.id}}</ion-title>\n        <ion-buttons end>\n            <button ion-button primary (click)="editRequest($event,item)" *ngIf="!editVar">\n    		<ion-icon name="create"></ion-icon>\n    	</button>\n            <button ion-button primary (click)="saveRequest($event,item)" *ngIf=\'editVar\'>\n    		Save\n    	</button>\n        </ion-buttons>\n    </ion-navbar>\n\n</ion-header>\n\n\n<ion-content>\n    <ion-card id="details">\n        <ion-card-header primary>\n            Details\n        </ion-card-header>\n        <ion-card-content>\n            <ion-row>\n\n                <ion-col col-11>\n                    <ion-item>\n                        <ion-label>Work Order</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.wo_no" value=\'{{item.wo_no}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n                <ion-col col-1 bottom large>\n                    <ion-icon bottom name="barcode" *ngIf="editVar" (click)="scan()"></ion-icon>\n                </ion-col>\n\n            </ion-row>\n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Service Type</ion-label>\n                        <ion-input *ngIf="!editVar" type="text" [readonly]="!editVar" value=\'{{item.service_type}}\'></ion-input>\n                        <ion-select *ngIf="editVar" [(ngModel)]="item.service_type" interface=\'action-sheet\'>\n                            <ion-option>On Site Field Service</ion-option>\n                            <ion-option>Parts Replacement Only</ion-option>\n                            <ion-option>Phone Technical Support</ion-option>\n                            <ion-option>Others</ion-option>\n                        </ion-select>\n                    </ion-item>\n\n                </ion-col>\n            </ion-row>\n\n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Failure Type</ion-label>\n                        <ion-input *ngIf="!editVar" type="text" [readonly]="!editVar" value=\'{{item.failure_type}}\'></ion-input>\n                        <ion-select *ngIf="editVar" [(ngModel)]="item.failure_type" interface=\'action-sheet\'>\n                            <ion-option>Door</ion-option>\n                            <ion-option>Frame</ion-option>\n                            <ion-option>LED</ion-option>\n                            <ion-option>Unknown</ion-option>\n                        </ion-select>\n                    </ion-item>\n                </ion-col>\n            </ion-row>\n            \n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Issue</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.subject" value=\'{{item.subject}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n            </ion-row>\n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Description</ion-label>\n                        <ion-textarea type="text" [readonly]="!editVar" [(ngModel)]="item.description" value=\'{{item.description}}\'></ion-textarea>\n                    </ion-item>\n                </ion-col>\n            </ion-row>\n            \n            <ion-card>\n                <ion-card-header>Basic Contact Information</ion-card-header>\n                <ion-card-content>\n                    <ion-row>\n                        <ion-col>\n                            <ion-item>\n                                <ion-label stacked>First Name</ion-label>\n                                <ion-input type="text" [readonly]="!editVar" \n                                [(ngModel)]="item.first_name" value=\'{{item.first_name}}\'></ion-input>\n                            </ion-item>\n                        </ion-col>\n                        <ion-col>\n                            <ion-item>\n                                <ion-label stacked>Last Name</ion-label>\n                                <ion-input type="text" [readonly]="!editVar" \n                                [(ngModel)]="item.last_name" value=\'{{item.last_name}}\'></ion-input>\n                            </ion-item>\n                        </ion-col>\n                    </ion-row>\n                    <ion-row>\n                        <ion-col>\n                            <ion-item>\n                                <ion-label stacked>Company</ion-label>\n                                <ion-input type="text" [readonly]="!editVar" \n                                [(ngModel)]="item.company" value=\'{{item.company}}\'></ion-input>\n                            </ion-item>\n                        </ion-col>\n                        <ion-col>\n                            <ion-item>\n                                <ion-label stacked>AAN</ion-label>\n                                <ion-input type="text" [readonly]="!editVar" \n                                [(ngModel)]="item.anthony_account_no" value=\'{{item.anthony_account_no}}\'></ion-input>\n                            </ion-item>\n                        </ion-col>\n                    </ion-row>\n                    <ion-row>\n                        <ion-col>\n                            <ion-item>\n                                <ion-label stacked>Phone</ion-label>\n                                <ion-input type="tel" [readonly]="!editVar" \n                                [(ngModel)]="item.phone" value=\'{{item.phone}}\'></ion-input>\n                            </ion-item>\n                        </ion-col>\n                        <ion-col>\n                            <ion-item>\n                                <ion-label stacked>Email</ion-label>\n                                <ion-input type="email" [readonly]="!editVar" \n                                [(ngModel)]="item.email" value=\'{{item.email}}\'></ion-input>\n                            </ion-item>\n                        </ion-col>\n                    </ion-row>\n                </ion-card-content>    \n            </ion-card>\n            \n\n        </ion-card-content>\n    </ion-card>\n\n    <ion-card id="location">\n        <ion-card-header>\n            Service Location Information\n        </ion-card-header>\n        <ion-card-content>\n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Address</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.address" value=\'{{item.address}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n            </ion-row>\n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>City</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.city" value=\'{{item.city}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>State</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.state" value=\'{{item.state}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n            </ion-row>\n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Country</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.country" value=\'{{item.country}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Zip Code</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.zip_code" value=\'{{item.zip_code}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n            </ion-row>\n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Site Contact</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.site_contact" value=\'{{item.site_contact}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Phone</ion-label>\n                        <ion-input type="tel" [readonly]="!editVar" [(ngModel)]="item.phone" value=\'{{item.phone}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n            </ion-row>\n        </ion-card-content>\n    </ion-card>\n\n    <ion-card id="attach">\n        <ion-card-header>\n            Attachments\n        </ion-card-header>\n        <ion-card-content>\n            <ion-list>\n                <ion-item>\n                    Attachment list items\n                </ion-item>\n            </ion-list>\n        </ion-card-content>\n    </ion-card>\n\n    <ion-card id="findings">\n        <ion-card-header>\n            Findings\n        </ion-card-header>\n        <ion-card-content>\n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Finding upon arrival</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.findings" value=\'{{item.findings}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n            </ion-row>\n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Work performed</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.work_performed" value=\'{{item.work_performed}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n            </ion-row>\n        </ion-card-content>\n    </ion-card>\n\n    <ion-card id="readings">\n        <ion-card-header>\n            Readings\n        </ion-card-header>\n        <ion-card-content>\n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Store temperature<br>(ambient)</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.temperature" value=\'{{item.temperature}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Store relative <br>humidity</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.humidity" value=\'{{item.humidity}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n            </ion-row>\n\n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Case(box) temperature</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.temperature" value=\'{{item.temperature}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Frame readings</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.frame_readings" value=\'{{item.humidity}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n            </ion-row>\n\n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Anthony model #</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="anthony_model_no" value=\'{{item.temperature}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Date manufactured</ion-label>\n                        <ion-datetime displayFormat="MM/DD/YYYY" [(ngModel)]="item.date_manufactured" ></ion-datetime>\n                    </ion-item>\n                </ion-col>\n\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Case manufacture</ion-label>\n                        <ion-datetime displayFormat="MM/DD/YYYY" [(ngModel)]="item.case_manufacture"></ion-datetime>\n                    </ion-item>\n                </ion-col>\n            </ion-row>\n            <ion-card>\n                <ion-card-content>\n                    <ion-row>\n                        <ion-col>\n                            <ion-label stacked>Does store have</ion-label>\n                            <ion-item>\n                                <ion-label><p>Cooler</p></ion-label>\n                                <ion-checkbox [(ngModel)]="Cooler"></ion-checkbox>\n                            </ion-item>\n\n                            <ion-item>\n                                <ion-label><p>Freezer</p></ion-label>\n                                <ion-checkbox [(ngModel)]="Freezer"></ion-checkbox>\n                            </ion-item>\n\n                            <ion-item>\n                                <ion-label><p>None</p></ion-label>\n                                <ion-checkbox [(ngModel)]="None"></ion-checkbox>\n                            </ion-item>\n\n                            <ion-item>\n                                <ion-label><p>Refrigerated AC</p></ion-label>\n                                <ion-checkbox [(ngModel)]="refrigerated_ac"></ion-checkbox>\n                            </ion-item>\n\n                            <ion-item>\n                                <ion-label><p>Swamps Coolers</p></ion-label>\n                                <ion-checkbox [(ngModel)]="swamps_coolers"></ion-checkbox>\n                            </ion-item>\n\n                        </ion-col>\n                    </ion-row>  \n                </ion-card-content>\n            </ion-card>\n            <ion-row>\n                <ion-item>\n                  <ion-label><p style="font-size:small">Is the equipment properly grounded?</p></ion-label>\n                  <ion-toggle [(ngModel)]="grounded"></ion-toggle>\n                </ion-item>\n                <ion-item>\n                  <ion-label><p style="font-size:small">Are lights and heaters on <br>separate circuits?</p></ion-label>\n                  <ion-toggle [(ngModel)]="separate_circuits"></ion-toggle>\n                </ion-item>\n                <ion-item>\n                  <ion-label><p style="font-size:small">Are fan blowing directly <br>on back of glass doors?</p></ion-label>\n                  <ion-toggle [(ngModel)]="doors"></ion-toggle>\n                </ion-item>\n                <ion-item>\n                  <ion-label><p style="font-size:small">Door/Frame gaskets sealing?</p></ion-label>\n                  <ion-toggle [(ngModel)]="sealing"></ion-toggle>\n                </ion-item>\n                <ion-item>\n                  <ion-label><p style="font-size:small">Problem reported different<br>than problem found?</p></ion-label>\n                  <ion-toggle [(ngModel)]="different"></ion-toggle>\n                </ion-item>\n                <ion-item>\n                  <ion-label><p style="font-size:small">Glass Condensation?</p></ion-label>\n                  <ion-toggle [(ngModel)]="glass_Condensation"></ion-toggle>\n                </ion-item>\n                <ion-item>\n                  <ion-label><p style="font-size:small">Frame condensation?</p></ion-label>\n                  <ion-toggle [(ngModel)]="frame_condensation"></ion-toggle>\n                </ion-item>\n                <ion-item>\n                  <ion-label><p style="font-size:small">Door rail condensation?</p></ion-label>\n                  <ion-toggle [(ngModel)]="rail_condensation"></ion-toggle>\n                </ion-item>\n                <ion-item>\n                  <ion-label><p style="font-size:small">Box (case) condensation?</p></ion-label>\n                  <ion-toggle [(ngModel)]="box_condensation"></ion-toggle>\n                </ion-item>\n                <ion-item>\n                  <ion-label><p style="font-size:small">Install Problems?</p></ion-label>\n                  <ion-toggle [(ngModel)]="install_problems"></ion-toggle>\n                </ion-item>\n                \n            </ion-row>\n            \n            \n        </ion-card-content>\n    </ion-card>\n\n    <ion-card>\n        <ion-card-content>\n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                    <ion-label stacked>Manager Name</ion-label>\n                    <ion-input [(ngModel)]="manager_name"></ion-input>\n                    </ion-item>\n                </ion-col>\n                <ion-col>\n                    <ion-item>\n                    <ion-label stacked>Invoice #</ion-label>\n                    <ion-input [(ngModel)]="invoice_no"></ion-input>\n                    </ion-item>\n                </ion-col>\n                </ion-row>\n                <ion-row>\n                <ion-col>\n                    <ion-item>\n                    <ion-label stacked>Manager Signature</ion-label>\n                    <ion-input [(ngModel)]="manager_name"></ion-input>\n                    </ion-item>\n                </ion-col>\n                <ion-col>\n                    <ion-item>\n                    <ion-label stacked>Amount</ion-label>\n                    <ion-input [(ngModel)]="amount"></ion-input>\n                    </ion-item>\n                </ion-col>\n                <ion-col>\n                    <ion-item>\n                    <ion-label stacked>Date</ion-label>\n                    <ion-datetime displayFormat="MM/DD/YYYY" [(ngModel)]="invoice_date"></ion-datetime>\n                    </ion-item>\n                </ion-col>\n                </ion-row>\n        </ion-card-content>\n    </ion-card>\n\n</ion-content>\n\n<ion-footer>\n    <ion-toolbar text-center>\n        <ion-row>\n            <ion-col>\n                <a href="#details">\n                    <ion-icon name="construct"></ion-icon>\n                    <p>Details</p>\n                </a>\n            </ion-col>\n\n            <ion-col>\n                <a href="#location">\n                    <ion-icon name="locate"></ion-icon>\n                    <p>Location</p>\n                </a>\n            </ion-col>\n\n            <ion-col>\n                <a href="#attach">\n                    <ion-icon name="attach"></ion-icon>\n                    <p>Attachments</p>\n                </a>\n            </ion-col>\n            <ion-col>\n                <a href="#findings">\n                    <ion-icon name="glasses"></ion-icon>\n                    <p>Findings</p>\n                </a>\n            </ion-col>\n\n            <ion-col>\n                <a href="#readings">\n                    <ion-icon name="thermometer"></ion-icon>\n                    <p>Readings</p>\n                </a>\n            </ion-col>\n\n        </ion-row>\n    </ion-toolbar>\n</ion-footer>'/*ion-inline-end:"C:\work\nodejs\AnthonyFS\src\pages\service-request\service-request.html"*/,
+        selector: 'page-service-request',template:/*ion-inline-start:"C:\work\nodejs\AnthonyFS\src\pages\service-request\service-request.html"*/'<!--\n  Generated template for the ServiceRequestPage page.\n\n  See http://ionicframework.com/docs/components/#navigation for more info on\n  Ionic pages and navigation.\n-->\n<ion-header>\n\n    <ion-navbar hide-tabs>\n        <ion-title>Service Request: {{item.id}}</ion-title>\n        <ion-buttons end>\n            <button ion-button primary (click)="editRequest($event,item)" *ngIf="!editVar">\n    		<ion-icon name="create"></ion-icon>\n    	</button>\n            <button ion-button primary (click)="saveRequest($event,item)" *ngIf=\'editVar\'>\n    		Save\n    	</button>\n        </ion-buttons>\n    </ion-navbar>\n\n</ion-header>\n\n\n<ion-content>\n    <ion-card id="details">\n        <ion-card-header primary>\n            Details\n        </ion-card-header>\n        <ion-card-content>\n            <ion-row>\n\n                <ion-col col-11>\n                    <ion-item>\n                        <ion-label>Work Order</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.wo_no" value=\'{{item.wo_no}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n                <ion-col col-1 bottom large>\n                    <ion-icon bottom name="barcode" *ngIf="editVar" (click)="scan()"></ion-icon>\n                </ion-col>\n\n            </ion-row>\n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Service Type</ion-label>\n                        <ion-input *ngIf="!editVar" type="text" [readonly]="!editVar" value=\'{{item.service_type}}\'></ion-input>\n                        <ion-select *ngIf="editVar" [(ngModel)]="item.service_type" interface=\'action-sheet\'>\n                            <ion-option>On Site Field Service</ion-option>\n                            <ion-option>Parts Replacement Only</ion-option>\n                            <ion-option>Phone Technical Support</ion-option>\n                            <ion-option>Others</ion-option>\n                        </ion-select>\n                    </ion-item>\n\n                </ion-col>\n            </ion-row>\n\n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Failure Type</ion-label>\n                        <ion-input *ngIf="!editVar" type="text" [readonly]="!editVar" value=\'{{item.failure_type}}\'></ion-input>\n                        <ion-select *ngIf="editVar" [(ngModel)]="item.failure_type" interface=\'action-sheet\'>\n                            <ion-option>Door</ion-option>\n                            <ion-option>Frame</ion-option>\n                            <ion-option>LED</ion-option>\n                            <ion-option>Unknown</ion-option>\n                        </ion-select>\n                    </ion-item>\n                </ion-col>\n            </ion-row>\n            \n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Issue</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.subject" value=\'{{item.subject}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n            </ion-row>\n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Description</ion-label>\n                        <ion-textarea type="text" [readonly]="!editVar" [(ngModel)]="item.description" value=\'{{item.description}}\'></ion-textarea>\n                    </ion-item>\n                </ion-col>\n            </ion-row>\n            \n            <ion-card>\n                <ion-card-header>Basic Contact Information</ion-card-header>\n                <ion-card-content>\n                    <ion-row>\n                        <ion-col>\n                            <ion-item>\n                                <ion-label stacked>First Name</ion-label>\n                                <ion-input type="text" [readonly]="!editVar" \n                                [(ngModel)]="item.first_name" value=\'{{item.first_name}}\'></ion-input>\n                            </ion-item>\n                        </ion-col>\n                        <ion-col>\n                            <ion-item>\n                                <ion-label stacked>Last Name</ion-label>\n                                <ion-input type="text" [readonly]="!editVar" \n                                [(ngModel)]="item.last_name" value=\'{{item.last_name}}\'></ion-input>\n                            </ion-item>\n                        </ion-col>\n                    </ion-row>\n                    <ion-row>\n                        <ion-col>\n                            <ion-item>\n                                <ion-label stacked>Company</ion-label>\n                                <ion-input type="text" [readonly]="!editVar" \n                                [(ngModel)]="item.company" value=\'{{item.company}}\'></ion-input>\n                            </ion-item>\n                        </ion-col>\n                        <ion-col>\n                            <ion-item>\n                                <ion-label stacked>AAN</ion-label>\n                                <ion-input type="text" [readonly]="!editVar" \n                                [(ngModel)]="item.anthony_account_no" value=\'{{item.anthony_account_no}}\'></ion-input>\n                            </ion-item>\n                        </ion-col>\n                    </ion-row>\n                    <ion-row>\n                        <ion-col>\n                            <ion-item>\n                                <ion-label stacked>Phone</ion-label>\n                                <ion-input type="tel" [readonly]="!editVar" \n                                [(ngModel)]="item.phone" value=\'{{item.phone}}\'></ion-input>\n                            </ion-item>\n                        </ion-col>\n                        <ion-col>\n                            <ion-item>\n                                <ion-label stacked>Email</ion-label>\n                                <ion-input type="email" [readonly]="!editVar" \n                                [(ngModel)]="item.email" value=\'{{item.email}}\'></ion-input>\n                            </ion-item>\n                        </ion-col>\n                    </ion-row>\n                </ion-card-content>    \n            </ion-card>\n            \n\n        </ion-card-content>\n    </ion-card>\n\n    <ion-card id="location">\n        <ion-card-header>\n            Service Location Information\n            <ion-buttons end>\n                <button ion-button (click)="getLocation()">\n                    <ion-icon name="locate"></ion-icon>\n                </button>\n            </ion-buttons>\n        </ion-card-header>\n        <ion-card-content>\n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Address</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.address" value=\'{{item.address}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n            </ion-row>\n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>City</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.city" value=\'{{item.city}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>State</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.state" value=\'{{item.state}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n            </ion-row>\n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Country</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.country" value=\'{{item.country}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Zip Code</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.zip_code" value=\'{{item.zip_code}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n            </ion-row>\n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Site Contact</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.site_contact" value=\'{{item.site_contact}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Phone</ion-label>\n                        <ion-input type="tel" [readonly]="!editVar" [(ngModel)]="item.phone" value=\'{{item.phone}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n            </ion-row>\n        </ion-card-content>\n    </ion-card>\n\n    <ion-card id="attach">\n        <ion-card-header>\n            Attachments\n        </ion-card-header>\n        <ion-card-content>\n            <ion-list>\n                <ion-item>\n                    Attachment list items\n                </ion-item>\n            </ion-list>\n        </ion-card-content>\n    </ion-card>\n\n    <ion-card id="findings">\n        <ion-card-header>\n            Findings\n        </ion-card-header>\n        <ion-card-content>\n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Finding upon arrival</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.findings" value=\'{{item.findings}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n            </ion-row>\n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Work performed</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.work_performed" value=\'{{item.work_performed}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n            </ion-row>\n        </ion-card-content>\n    </ion-card>\n\n    <ion-card id="readings">\n        <ion-card-header>\n            Readings\n        </ion-card-header>\n        <ion-card-content>\n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Store temperature<br>(ambient)</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.temperature" value=\'{{item.temperature}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Store relative <br>humidity</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.humidity" value=\'{{item.humidity}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n            </ion-row>\n\n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Case(box) temperature</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.temperature" value=\'{{item.temperature}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Frame readings</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="item.frame_readings" value=\'{{item.humidity}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n            </ion-row>\n\n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Anthony model #</ion-label>\n                        <ion-input type="text" [readonly]="!editVar" [(ngModel)]="anthony_model_no" value=\'{{item.temperature}}\'></ion-input>\n                    </ion-item>\n                </ion-col>\n\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Date manufactured</ion-label>\n                        <ion-datetime displayFormat="MM/DD/YYYY" [(ngModel)]="item.date_manufactured" ></ion-datetime>\n                    </ion-item>\n                </ion-col>\n\n                <ion-col>\n                    <ion-item>\n                        <ion-label stacked>Case manufacture</ion-label>\n                        <ion-datetime displayFormat="MM/DD/YYYY" [(ngModel)]="item.case_manufacture"></ion-datetime>\n                    </ion-item>\n                </ion-col>\n            </ion-row>\n            <ion-card>\n                <ion-card-content>\n                    <ion-row>\n                        <ion-col>\n                            <ion-label stacked>Does store have</ion-label>\n                            <ion-item>\n                                <ion-label><p>Cooler</p></ion-label>\n                                <ion-checkbox [(ngModel)]="Cooler"></ion-checkbox>\n                            </ion-item>\n\n                            <ion-item>\n                                <ion-label><p>Freezer</p></ion-label>\n                                <ion-checkbox [(ngModel)]="Freezer"></ion-checkbox>\n                            </ion-item>\n\n                            <ion-item>\n                                <ion-label><p>None</p></ion-label>\n                                <ion-checkbox [(ngModel)]="None"></ion-checkbox>\n                            </ion-item>\n\n                            <ion-item>\n                                <ion-label><p>Refrigerated AC</p></ion-label>\n                                <ion-checkbox [(ngModel)]="refrigerated_ac"></ion-checkbox>\n                            </ion-item>\n\n                            <ion-item>\n                                <ion-label><p>Swamps Coolers</p></ion-label>\n                                <ion-checkbox [(ngModel)]="swamps_coolers"></ion-checkbox>\n                            </ion-item>\n\n                        </ion-col>\n                    </ion-row>  \n                </ion-card-content>\n            </ion-card>\n            <ion-row>\n                <ion-item>\n                  <ion-label><p style="font-size:small">Is the equipment properly grounded?</p></ion-label>\n                  <ion-toggle [(ngModel)]="grounded"></ion-toggle>\n                </ion-item>\n                <ion-item>\n                  <ion-label><p style="font-size:small">Are lights and heaters on <br>separate circuits?</p></ion-label>\n                  <ion-toggle [(ngModel)]="separate_circuits"></ion-toggle>\n                </ion-item>\n                <ion-item>\n                  <ion-label><p style="font-size:small">Are fan blowing directly <br>on back of glass doors?</p></ion-label>\n                  <ion-toggle [(ngModel)]="doors"></ion-toggle>\n                </ion-item>\n                <ion-item>\n                  <ion-label><p style="font-size:small">Door/Frame gaskets sealing?</p></ion-label>\n                  <ion-toggle [(ngModel)]="sealing"></ion-toggle>\n                </ion-item>\n                <ion-item>\n                  <ion-label><p style="font-size:small">Problem reported different<br>than problem found?</p></ion-label>\n                  <ion-toggle [(ngModel)]="different"></ion-toggle>\n                </ion-item>\n                <ion-item>\n                  <ion-label><p style="font-size:small">Glass Condensation?</p></ion-label>\n                  <ion-toggle [(ngModel)]="glass_Condensation"></ion-toggle>\n                </ion-item>\n                <ion-item>\n                  <ion-label><p style="font-size:small">Frame condensation?</p></ion-label>\n                  <ion-toggle [(ngModel)]="frame_condensation"></ion-toggle>\n                </ion-item>\n                <ion-item>\n                  <ion-label><p style="font-size:small">Door rail condensation?</p></ion-label>\n                  <ion-toggle [(ngModel)]="rail_condensation"></ion-toggle>\n                </ion-item>\n                <ion-item>\n                  <ion-label><p style="font-size:small">Box (case) condensation?</p></ion-label>\n                  <ion-toggle [(ngModel)]="box_condensation"></ion-toggle>\n                </ion-item>\n                <ion-item>\n                  <ion-label><p style="font-size:small">Install Problems?</p></ion-label>\n                  <ion-toggle [(ngModel)]="install_problems"></ion-toggle>\n                </ion-item>\n                \n            </ion-row>\n            \n            \n        </ion-card-content>\n    </ion-card>\n\n    <ion-card>\n        <ion-card-content>\n            <ion-row>\n                <ion-col>\n                    <ion-item>\n                    <ion-label stacked>Manager Name</ion-label>\n                    <ion-input [(ngModel)]="manager_name"></ion-input>\n                    </ion-item>\n                </ion-col>\n                <ion-col>\n                    <ion-item>\n                    <ion-label stacked>Invoice #</ion-label>\n                    <ion-input [(ngModel)]="invoice_no"></ion-input>\n                    </ion-item>\n                </ion-col>\n                </ion-row>\n                <ion-row>\n                <ion-col>\n                    <ion-item>\n                    <ion-label stacked>Manager Signature</ion-label>\n                    <ion-input [(ngModel)]="manager_name"></ion-input>\n                    </ion-item>\n                </ion-col>\n                <ion-col>\n                    <ion-item>\n                    <ion-label stacked>Amount</ion-label>\n                    <ion-input [(ngModel)]="amount"></ion-input>\n                    </ion-item>\n                </ion-col>\n                <ion-col>\n                    <ion-item>\n                    <ion-label stacked>Date</ion-label>\n                    <ion-datetime displayFormat="MM/DD/YYYY" [(ngModel)]="invoice_date"></ion-datetime>\n                    </ion-item>\n                </ion-col>\n                </ion-row>\n        </ion-card-content>\n    </ion-card>\n\n</ion-content>\n\n<ion-footer>\n    <ion-toolbar text-center>\n        <ion-row>\n            <ion-col>\n                <a href="#details">\n                    <ion-icon name="construct"></ion-icon>\n                    <p>Details</p>\n                </a>\n            </ion-col>\n\n            <ion-col>\n                <a href="#location">\n                    <ion-icon name="locate"></ion-icon>\n                    <p>Location</p>\n                </a>\n            </ion-col>\n\n            <ion-col>\n                <a href="#attach">\n                    <ion-icon name="attach"></ion-icon>\n                    <p>Attachments</p>\n                </a>\n            </ion-col>\n            <ion-col>\n                <a href="#findings">\n                    <ion-icon name="glasses"></ion-icon>\n                    <p>Findings</p>\n                </a>\n            </ion-col>\n\n            <ion-col>\n                <a href="#readings">\n                    <ion-icon name="thermometer"></ion-icon>\n                    <p>Readings</p>\n                </a>\n            </ion-col>\n\n        </ion-row>\n    </ion-toolbar>\n</ion-footer>'/*ion-inline-end:"C:\work\nodejs\AnthonyFS\src\pages\service-request\service-request.html"*/,
     }),
     __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */],
         __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavParams */],
         __WEBPACK_IMPORTED_MODULE_2__shared_shared__["a" /* AnthonyApi */],
         __WEBPACK_IMPORTED_MODULE_3__ionic_native_barcode_scanner__["a" /* BarcodeScanner */],
         __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* ToastController */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["d" /* LoadingController */]])
+        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["d" /* LoadingController */],
+        __WEBPACK_IMPORTED_MODULE_4__ionic_native_geolocation__["a" /* Geolocation */]])
 ], ServiceRequestPage);
 
 //# sourceMappingURL=service-request.js.map
 
 /***/ }),
 
-/***/ 578:
+/***/ 582:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AnthonyFS; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__pages_request_list_tabs_request_list_tabs__ = __webpack_require__(230);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__pages_home_tabs_home_tabs__ = __webpack_require__(258);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__pages_home_tabs_home_tabs__ = __webpack_require__(259);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_core__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_ionic_angular__ = __webpack_require__(21);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ionic_native_status_bar__ = __webpack_require__(259);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__ionic_native_splash_screen__ = __webpack_require__(260);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__angular_http__ = __webpack_require__(125);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__shared_shared__ = __webpack_require__(124);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ionic_native_status_bar__ = __webpack_require__(260);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__ionic_native_splash_screen__ = __webpack_require__(261);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__angular_http__ = __webpack_require__(126);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__shared_shared__ = __webpack_require__(125);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__ionic_native_barcode_scanner__ = __webpack_require__(255);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -953,5 +993,5 @@ AnthonyFS = __decorate([
 
 /***/ })
 
-},[261]);
+},[262]);
 //# sourceMappingURL=main.js.map
